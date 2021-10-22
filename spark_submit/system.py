@@ -28,7 +28,7 @@ def system_info() -> str:
 
     Returns:
         str: system information
-   """
+    """
     spark_bin = os.environ.get('SPARK_HOME', os.path.expanduser('~/spark_home')) + '/bin/spark-submit'
     cmd = spark_bin + ' --version'
 

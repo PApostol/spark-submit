@@ -19,7 +19,7 @@ setup(
      license = about['__license__'],
      url = about['__url__'],
      description = about['__description__'],
-     long_description_content_type="text/markdown",
+     long_description_content_type = 'text/markdown',
      long_description = readme,
      packages = find_packages(),
      include_package_data = True,
