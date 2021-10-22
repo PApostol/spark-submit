@@ -116,16 +116,16 @@ class SparkJob:
                 self.submit_response['driver_state'] = driver_state[0]
 
 
-    def submit(self, use_env_vars: bool=False, await_result: int=0) -> None:
+    def submit(self, await_result: int=0, use_env_vars: bool=False) -> None:
         """Submits the current Spark job to Spark master
 
         Parameters
-            use_env_vars (bool): whether the environment variables obtained should be used (default: False)
             await_result (int): how often to poll for the Spark driver state in a background thread (default: 0, don't monitor in a background thread)
+            use_env_vars (bool): whether the environment variables obtained should be used (default: False)
 
         Returns:
             None
-       """
+        """
         env_vars = ''
         if use_env_vars:
             for env_var, val in self.env_vars.items():
@@ -146,7 +146,7 @@ class SparkJob:
             self.submit_response['driver_state'] = 'ERROR'
             raise SparkSubmitError(f'{output}\nReturn code: {code}')
 
-        elif self.spark_args['deploy_mode']=='client':
+        elif self.spark_args['deploy_mode'] == 'client':
             self.submit_response['driver_state'] = 'FINISHED'
 
         else:
@@ -165,7 +165,7 @@ class SparkJob:
 
         Returns:
             str: Spark job driver state
-       """
+        """
         self._check_submit()
         return self.submit_response['driver_state']
 
@@ -175,7 +175,7 @@ class SparkJob:
 
         Returns:
             str: spark-submit stdout
-       """
+        """
         return self.submit_response['output']
 
 
@@ -184,8 +184,8 @@ class SparkJob:
 
         Returns:
             int: spark-submit return code (returns -1 if no code)
-       """
-        return self.submit_response['code'] if self.submit_response['code'] else -1
+        """
+        return self.submit_response['code'] if isinstance(self.submit_response['code'], int) else -1
 
 
     def kill(self) -> None:
@@ -193,7 +193,7 @@ class SparkJob:
 
         Returns:
             None
-       """
+        """
         if self.submit_response['driver_state'] in end_sates:
             logging.warning('Spark job "{0}" has concluded with state {1} and cannot be killed.'.format(self.spark_args['name'], self.submit_response['driver_state']))
         elif self.submit_response['submission_id']:
