@@ -1,7 +1,7 @@
 ## Spark-submit
 
 [![PyPI version](https://badge.fury.io/py/spark-submit.svg)](https://badge.fury.io/py/spark-submit)
-[![Github All Releases](https://img.shields.io/github/downloads/PApostol/spark-submit/total.svg)]()
+[![PyPI - Downloads](https://img.shields.io/pypi/dm/spark-submit)](https://pypi.org/project/spark-submit/)
 [![](https://img.shields.io/badge/python-3.5+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/License-MIT-blue)](#license "Go to license section")
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/PApostol/spark-submit/issues)
@@ -59,7 +59,7 @@ print(app.submit_cmd)
 print(app.env_vars)
 
 # monitor state in the background every x seconds with `await_result=x`
-app.submit(use_env_vars=True, await_result=10)
+app.submit(await_result=10, use_env_vars=True)
 
 print(app.get_state()) # 'SUBMITTED'
 
@@ -134,6 +134,15 @@ spark_args = {
 main_file = 's3a://mybucket/file.jar'
 app = SparkJob(main_file, **spark_args)
 ```
+
+#### Testing
+
+You can do some simple testing with local mode Spark after cloning the repo:
+
+`python tests/run_test.py`
+
+Note any additional requirements for running the tests: `pip install -r tests/requirements.txt`
+
 #### Additional methods
 
 `spark_submit.system_info()`: Collects Spark related system information, such as versions of spark-submit, Scala, Java, Python and OS
@@ -146,8 +155,8 @@ app = SparkJob(main_file, **spark_args)
 
 ### License
 
-Released under [MIT](/LICENSE) by [@PApostol](https://github.com/PApostol)
+Released under [MIT](/LICENSE) by [@PApostol](https://github.com/PApostol).
 
-- You can freely modify and reuse
-- The original license must be included with copies of this software
-- Please link back to this repo if you use a significant portion the source code
+- You can freely modify and reuse.
+- The original license must be included with copies of this software.
+- Please link back to this repo if you use a significant portion the source code.
