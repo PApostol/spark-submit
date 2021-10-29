@@ -2,7 +2,7 @@
 
 [![PyPI version](https://badge.fury.io/py/spark-submit.svg)](https://badge.fury.io/py/spark-submit)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/spark-submit)](https://pypi.org/project/spark-submit/)
-[![](https://img.shields.io/badge/python-3.5+-blue.svg)](https://www.python.org/downloads/)
+[![](https://img.shields.io/badge/python-3.6+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/License-MIT-blue)](#license "Go to license section")
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/PApostol/spark-submit/issues)
 

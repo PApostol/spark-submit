@@ -35,6 +35,6 @@ setup(
      ],
      zip_safe = True,
      platforms = ['any'],
-     python_requires = '~=3.5',
+     python_requires = '~=3.6',
      keywords = ['apache', 'spark', 'submit'],
  )
