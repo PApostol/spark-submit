@@ -1,4 +1,4 @@
-"""spark-submit module Installation script"""
+"""spark-submit module installation script"""
 from setuptools import setup, find_packages
 import os
 
