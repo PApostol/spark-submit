@@ -55,7 +55,7 @@ spark_args = {
     }
 
 app = SparkJob('s3a://bucket/path/some_file.jar', **spark_args)
-print(app.submit_cmd)
+print(app.get_submic_cmd(multiline=True))
 print(app.env_vars)
 
 # monitor state in the background every x seconds with `await_result=x`
@@ -63,7 +63,9 @@ app.submit(await_result=10, use_env_vars=True)
 
 print(app.get_state()) # 'SUBMITTED'
 
-# do other stuff...
+while not app.concluded:
+    # do other stuff...
+    print(app.get_state()) # 'RUNNING'
 
 print(app.get_state()) # 'FINISHED'
 ```
@@ -145,7 +147,7 @@ Note any additional requirements for running the tests: `pip install -r tests/re
 
 #### Additional methods
 
-`spark_submit.system_info()`: Collects Spark related system information, such as versions of spark-submit, Scala, Java, Python and OS
+`spark_submit.system_info()`: Collects Spark related system information, such as versions of spark-submit, Scala, Java, PySpark, Python and OS
 
 `spark_submit.SparkJob.kill()`: Kills the running Spark job (cluster mode only)
 
