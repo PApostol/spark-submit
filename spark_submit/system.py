@@ -16,7 +16,7 @@ def _get_env_vars() -> dict:
                 'PYSPARK_PYTHON': os.environ.get('PYSPARK_PYTHON', sys.executable),
                 'PYSPARK_DRIVER_PYTHON': os.environ.get('PYSPARK_DRIVER_PYTHON', sys.executable)
                 }
-    return {env_var: _quote_spaces(val) for env_var, val in env_vars.items()}
+    return {env_var: _quote_spaces(val).replace(os.path.sep, '/') for env_var, val in env_vars.items()}
 
 
 def _execute_cmd(cmd: str, silent: bool=True) -> Tuple[str, int]:
@@ -37,10 +37,10 @@ def system_info() -> str:
     Returns:
         str: system information
     """
-    spark_bin = os.environ.get('SPARK_HOME', os.path.expanduser('~/spark_home')) + '/bin/spark-submit'
+    spark_bin = os.environ.get('SPARK_HOME', os.path.expanduser('~/spark_home')).replace(os.path.sep, '/') + '/bin/spark-submit'
     info_cmd = _quote_spaces(spark_bin) + ' --version'
 
-    JAVA_HOME = os.environ.get('JAVA_HOME', '')
+    JAVA_HOME = os.environ.get('JAVA_HOME', '').replace(os.path.sep, '/')
     if JAVA_HOME:
         java_bin = JAVA_HOME + '/bin/java'
         info_cmd += f' ; {_quote_spaces(java_bin)} -version'

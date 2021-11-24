@@ -63,11 +63,11 @@ class SparkJob:
         self.spark_args = {**__defaults__, **spark_args}
 
         if main_file.startswith('s3') or main_file.startswith('local:') or os.path.isfile(os.path.expanduser(main_file)):
-            self.spark_args['main_file'] = main_file
+            self.spark_args['main_file'] = main_file.replace(os.path.sep, '/')
         else:
             raise FileNotFoundError(f'File {main_file} does not exist.')
 
-        spark_home = self.spark_args['spark_home']
+        spark_home = self.spark_args['spark_home'].replace(os.path.sep, '/')
         self.spark_bin = spark_home + '/bin/spark-submit'
         if not os.path.isfile(self.spark_bin):
             raise FileNotFoundError(f'bin/spark-submit was not found in "{spark_home}". Please add SPARK_HOME to path or provide it as an argument: spark_home')
@@ -178,7 +178,7 @@ class SparkJob:
                     threading.Thread(name=self.spark_args['name'], target=self._await_result, args=(await_result, )).start()
 
 
-    def get_submit_cmd(self, multiline=False) -> str:
+    def get_submit_cmd(self, multiline: bool=False) -> str:
         """Gets the associated spark-submit command
 
         Parameters
