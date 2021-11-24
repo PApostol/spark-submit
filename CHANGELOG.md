@@ -1,5 +1,8 @@
 ### Spark-submit
 
+##### 1.1.1 (TBD)
+- Use consistent path separators where possible
+
 ##### 1.1.0 (2021-11-13)
 - Use of `concluded` attribute to keep track of submitted job
 - Addition of `get_submit_cmd()` method
