@@ -4,14 +4,14 @@ import platform
 import re
 import subprocess
 import sys
-from typing import Tuple
+from typing import Dict, Optional, Tuple
 
 
 def _quote_spaces(val: str) -> str:
     return f'"{val}"' if ' ' in val else val
 
 
-def _get_env_vars() -> dict:
+def _get_env_vars() -> Dict[str, str]:
     env_vars = {'JAVA_HOME': os.environ.get('JAVA_HOME', ''),
                 'PYSPARK_PYTHON': os.environ.get('PYSPARK_PYTHON', sys.executable),
                 'PYSPARK_DRIVER_PYTHON': os.environ.get('PYSPARK_DRIVER_PYTHON', sys.executable)
@@ -19,9 +19,9 @@ def _get_env_vars() -> dict:
     return {env_var: _quote_spaces(val).replace(os.path.sep, '/') for env_var, val in env_vars.items()}
 
 
-def _execute_cmd(cmd: str, silent: bool=True) -> Tuple[str, int]:
+def _execute_cmd(cmd: str, silent: bool = True, timeout: Optional[int] = None) -> Optional[Tuple[str, int]]:
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
-    o, _ = p.communicate()
+    o, _ = p.communicate(timeout=timeout)
     o = o.decode()
     code = p.returncode
 
