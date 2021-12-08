@@ -1,6 +1,7 @@
 ## Spark-submit
 
 [![PyPI version](https://badge.fury.io/py/spark-submit.svg)](https://badge.fury.io/py/spark-submit)
+[![Downloads](https://static.pepy.tech/personalized-badge/spark-submit?period=month&units=international_system&left_color=grey&right_color=green&left_text=total%20downloads)](https://pepy.tech/project/spark-submit)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/spark-submit)](https://pypi.org/project/spark-submit/)
 [![](https://img.shields.io/badge/python-3.6+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/License-MIT-blue)](#license "Go to license section")
