@@ -37,3 +37,4 @@ Thumbs.db
 __pycache__/
 junk/
 dist/
+.mypy_cache/
