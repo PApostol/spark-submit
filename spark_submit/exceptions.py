@@ -1,8 +1,8 @@
 """Exceptions raised by SparkJob class"""
 
 class SparkSubmitError(Exception):
-    pass
+    """Raised if spark-submit command fails"""
 
 
 class SparkJobKillError(Exception):
-    pass
+    """Raised if spark-submit command fails"""

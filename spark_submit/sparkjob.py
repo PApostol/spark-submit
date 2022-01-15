@@ -1,14 +1,17 @@
-from .system import _get_env_vars, _execute_cmd
-from .exceptions import SparkSubmitError, SparkJobKillError
-from ._defaults import __defaults__, __end_states__
-from typing import Any, List, Optional, Tuple
+"""SparkJob class functionality"""
 import logging
 import os
 import platform
 import re
-import requests
 import threading
 import time
+from typing import Any, Dict, List, Optional, Tuple
+
+import requests
+
+from ._defaults import __defaults__, __end_states__
+from .exceptions import SparkJobKillError, SparkSubmitError
+from .system import _execute_cmd, _get_env_vars
 
 
 class SparkJob:
@@ -48,7 +51,7 @@ class SparkJob:
         self.is_k8s = 'k8s' in self.spark_args['master']
 
         self.submit_cmd = self._get_submit_cmd()
-        self.submit_response = {'output': '', 'code': -1, 'submission_id': '', 'driver_state': ''}
+        self.submit_response: Dict[str, Any] = {'output': '', 'code': -1, 'submission_id': '', 'driver_state': ''}
         self.concluded = False
 
 
@@ -59,6 +62,7 @@ class SparkJob:
     def _get_submit_cmd(self) -> str:
         booleans = {arg for arg, val in self.spark_args.items() if isinstance(val, bool)}
         exclude = {'spark_home', 'main_file', 'conf', 'main_file_args'} ^ booleans
+
         args = ['--{0} {1}'.format(arg.replace('_', '-'), val) for arg, val in self.spark_args.items() if arg not in exclude and val is not None]
         confs = [f'--conf {c}' for c in self.spark_args['conf']]
 
@@ -97,10 +101,10 @@ class SparkJob:
     def _check_submit(self) -> None:
         if self.submit_response['submission_id'] and not self.concluded:
             response = self._get_status_response()
-            driver_state = re.findall('\"driverState\" : \"(.+)\"', response)
+            driver_state = re.findall(r'\"driverState\" : \"(.+)\"', response)
 
             if len(driver_state) < 1:
-                logging.warning('driverState not found for in output "{0}" for Spark job "{1}"'.format(response, self.spark_args['name']))
+                logging.warning('driverState not found for in output "%s" for Spark job "%s"', response, self.spark_args['name'])
                 self.submit_response['driver_state'] = 'UNKNOWN'
             else:
                 self.submit_response['driver_state'] = driver_state[0]
@@ -109,11 +113,11 @@ class SparkJob:
 
     def _get_submission_id(self, output: str) -> List[str]:
         if self.is_yarn:
-            re_exp = '(application[0-9_]+)'
+            re_exp = r'(application[0-9_]+)'
         elif self.is_k8s:
-            re_exp = '\s*pod name: ((.+?)-([a-z0-9]+)-driver)'
+            re_exp = r'\s*pod name: ((.+?)-([a-z0-9]+)-driver)'
         else:
-            re_exp = '\"submissionId\" : \"(.+)\"'
+            re_exp = r'\"submissionId\" : \"(.+)\"'
         return re.findall(re_exp, output)
 
 
@@ -148,14 +152,14 @@ class SparkJob:
             self._update_concluded()
             raise SparkSubmitError(f'{output}\nReturn code: {code}')
 
-        elif self.spark_args['deploy_mode'] == 'client':
+        if self.spark_args['deploy_mode'] == 'client':
             self.submit_response['driver_state'] = 'FINISHED'
             self._update_concluded()
 
         else:
             submission_id = self._get_submission_id(output)
             if len(submission_id) < 1:
-                logging.warning('submissionId not found in output "{0}" for Spark job "{1}"'.format(output, self.spark_args['name']))
+                logging.warning('submissionId not found in output "%s" for Spark job "%s"', output, self.spark_args['name'])
                 self.submit_response['driver_state'] = 'UNKNOWN'
                 self._update_concluded()
             else:
@@ -175,8 +179,7 @@ class SparkJob:
         """
         if multiline:
             return self.submit_cmd.replace(' --', ' \ \n--').replace(' ' + self.spark_args['main_file'], ' \ \n' + self.spark_args['main_file'])
-        else:
-            return self.submit_cmd
+        return self.submit_cmd
 
 
     def get_state(self) -> str:
@@ -211,13 +214,14 @@ class SparkJob:
         if self.is_yarn:
             kill_cmd = 'yarn application -kill {0}'.format(self.submit_response['submission_id'])
             return _execute_cmd(kill_cmd)
-        elif self.is_k8s:
+
+        if self.is_k8s:
             kill_cmd = '{0} --master {1} --kill {2}'.format(self.spark_bin, self.spark_args['master'], self.submit_response['submission_id'])
             return _execute_cmd(kill_cmd)
-        else:
-            kill_url = self._get_api_url('kill')
-            r = requests.get(kill_url)
-            return r.text, r.status_code
+
+        kill_url = self._get_api_url('kill')
+        resp = requests.get(kill_url)
+        return resp.text, resp.status_code
 
 
     def kill(self) -> None:
@@ -227,15 +231,15 @@ class SparkJob:
             None
         """
         if self.concluded:
-            logging.warning('Spark job "{0}" has concluded with state {1} and cannot be killed.'.format(self.spark_args['name'], self.submit_response['driver_state']))
+            logging.warning('Spark job "%s" has concluded with state "%s" and cannot be killed.', self.spark_args['name'], self.submit_response['driver_state'])
 
         elif self.submit_response['submission_id']:
             response, code = self._get_kill_response()
 
             if code not in {0, 200}:
-                raise SparkJobKillError('Problem with killing Spark job "{0}" with submission ID {1}: {2}\nReturn code: {3}'.format(self.spark_args['name'], self.submit_response['submission_id'], response, code))
-            else:
-                self.submit_response['driver_state'] = 'KILLED'
-                self._update_concluded()
+                raise SparkJobKillError('Error killing Spark job "%s" with submission ID "%s": %s\nReturn code: %i', self.spark_args['name'], self.submit_response['submission_id'], response, code)
+
+            self.submit_response['driver_state'] = 'KILLED'
+            self._update_concluded()
         else:
-            raise SparkJobKillError('Spark job "{0}" has no submission ID to kill.'.format(self.spark_args['name']))
+            raise SparkJobKillError('Spark job "%s" has no submission ID to kill.', self.spark_args['name'])
