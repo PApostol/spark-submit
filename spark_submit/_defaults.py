@@ -1,7 +1,9 @@
+"""Some basic default spark-submit arguments and driver end states"""
 import os
+from typing import Any, Dict, Set
 
-# some basic default spark-submit arguments
-__defaults__ = {
+
+__defaults__: Dict[str, Any ] = {
     'spark_home': os.environ.get('SPARK_HOME', os.path.expanduser('~/spark_home')),
     'master': 'local[*]',
     'name': 'spark-submit-task',
@@ -34,4 +36,5 @@ __defaults__ = {
 # FAILED: The driver exited non-zero and was not supervised
 # ERROR: Unable to run or restart due to an unrecoverable error (e.g. missing jar file)
 
-__end_states__ = {'FINISHED', 'UNKNOWN', 'KILLED', 'FAILED', 'ERROR'} # states that conclude a job
+# states that conclude a job
+__end_states__: Set[str] = {'FINISHED', 'UNKNOWN', 'KILLED', 'FAILED', 'ERROR'}
