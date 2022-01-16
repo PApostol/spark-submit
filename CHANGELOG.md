@@ -1,5 +1,9 @@
 ### Spark-submit
 
+##### 1.2.1 (2022-01-16)
+- Refactor to comply with `pylint`, `isort` and `mypy` checks
+- Minor improvements
+
 ##### 1.2.0 (2021-12-09)
 - Improve support for Yarn and Kubernetes clusters on polling and killing submitted tasks
 - Use dedicated file for default arguments and Spark states

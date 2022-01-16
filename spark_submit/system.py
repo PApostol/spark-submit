@@ -1,3 +1,4 @@
+"""System related functionalities"""
 import logging
 import os
 import platform
@@ -19,16 +20,15 @@ def _get_env_vars() -> Dict[str, str]:
     return {env_var: _quote_spaces(val).replace(os.path.sep, '/') for env_var, val in env_vars.items()}
 
 
-def _execute_cmd(cmd: str, silent: bool = True, timeout: Optional[int] = None) -> Optional[Tuple[str, int]]:
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
-    o, _ = p.communicate(timeout=timeout)
-    o = o.decode()
-    code = p.returncode
+def _execute_cmd(cmd: str, silent: bool = True, timeout: Optional[int] = None) -> Tuple[str, int]:
+    with subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True) as process:
+        output, _ = process.communicate(timeout=timeout)
+        res = output.decode()
+        code = process.returncode
 
     if code != 0 and not silent:
-        logging.warning(o)
-    else:
-        return o, code
+        logging.warning(res)
+    return res, code
 
 
 def system_info() -> str:
@@ -37,12 +37,13 @@ def system_info() -> str:
     Returns:
         str: system information
     """
-    spark_bin = os.environ.get('SPARK_HOME', os.path.expanduser('~/spark_home')).replace(os.path.sep, '/') + '/bin/spark-submit'
+    spark_home = os.environ.get('SPARK_HOME', os.path.expanduser('~/spark_home')).replace(os.path.sep, '/')
+    spark_bin = spark_home + '/bin/spark-submit'
     info_cmd = _quote_spaces(spark_bin) + ' --version'
 
-    JAVA_HOME = os.environ.get('JAVA_HOME', '').replace(os.path.sep, '/')
-    if JAVA_HOME:
-        java_bin = JAVA_HOME + '/bin/java'
+    java_home = os.environ.get('JAVA_HOME', '').replace(os.path.sep, '/')
+    if java_home:
+        java_bin = java_home + '/bin/java'
         info_cmd += f' ; {_quote_spaces(java_bin)} -version'
 
     info_cmd += f' ; {_quote_spaces(sys.executable)} -m pip show pyspark'
@@ -56,12 +57,12 @@ def system_info() -> str:
                'PySpark version': 'Version: (.+)'
               }
 
-    sys_info = {}
-    for k, v in info_re.items():
-        i = re.findall(v, info_stdout, re.IGNORECASE)
+    sys_info: Dict[str, str] = {}
+    for key, val in info_re.items():
+        i = re.findall(val, info_stdout, re.IGNORECASE)
         if i:
-            sys_info[k] = i[0].strip()
+            sys_info[key] = i[0].strip()
 
-    sys_info['Python version'] = sys.version.split(' ')[0]
+    sys_info['Python version'] = sys.version.split(' ', maxsplit=1)[0]
     sys_info['OS'] = platform.platform()
-    return '\n'.join([f'{k}: {v}' for k, v in sys_info.items()])
+    return '\n'.join([f'{key}: {val}' for key, val in sys_info.items()])
