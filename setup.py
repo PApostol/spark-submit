@@ -1,9 +1,12 @@
 """spark-submit module installation script"""
-from setuptools import setup, find_packages
 import os
+from typing import Dict
+
+from setuptools import find_packages, setup
 
 info_location = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'spark_submit', '__info__.py')
-about = {}
+about: Dict[str, str] = {}
+
 with open(info_location, 'r') as f:
     exec(f.read(), about)
 

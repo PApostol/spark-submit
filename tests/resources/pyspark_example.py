@@ -1,7 +1,9 @@
-from pyspark.sql import SparkSession
-from random import random
-from operator import add
+"""pyspark example to calculate pi"""
 import sys
+from operator import add
+from random import random
+
+from pyspark.sql import SparkSession
 
 spark = SparkSession.builder.appName('Calculate Pi').getOrCreate()
 

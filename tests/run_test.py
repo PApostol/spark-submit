@@ -1,3 +1,4 @@
+"""Simple spark-submit test"""
 from spark_submit import SparkJob
 
 print('---Running example on local mode---')
