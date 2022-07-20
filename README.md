@@ -56,7 +56,7 @@ spark_args = {
     }
 
 app = SparkJob('s3a://bucket/path/some_file.jar', **spark_args)
-print(app.get_submic_cmd(multiline=True))
+print(app.get_submit_cmd(multiline=True))
 print(app.env_vars)
 
 # monitor state in the background every x seconds with `await_result=x`
