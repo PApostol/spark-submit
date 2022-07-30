@@ -3,7 +3,7 @@
 [![PyPI version](https://badge.fury.io/py/spark-submit.svg)](https://badge.fury.io/py/spark-submit)
 [![Downloads](https://static.pepy.tech/personalized-badge/spark-submit?period=month&units=international_system&left_color=grey&right_color=green&left_text=total%20downloads)](https://pepy.tech/project/spark-submit)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/spark-submit)](https://pypi.org/project/spark-submit/)
-[![](https://img.shields.io/badge/python-3.6+-blue.svg)](https://www.python.org/downloads/)
+[![](https://img.shields.io/badge/python-3.7+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/License-MIT-blue)](#license "Go to license section")
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/PApostol/spark-submit/issues)
 
@@ -57,10 +57,12 @@ spark_args = {
 
 app = SparkJob('s3a://bucket/path/some_file.jar', **spark_args)
 print(app.get_submit_cmd(multiline=True))
-print(app.env_vars)
 
-# monitor state in the background every x seconds with `await_result=x`
-app.submit(await_result=10, use_env_vars=True)
+# poll state in the background every x seconds with `poll_time=x`
+app.submit(use_env_vars=True,
+           extra_env_vars={'PYTHONPATH': '/some/path/'},
+           poll_time=10
+           )
 
 print(app.get_state()) # 'SUBMITTED'
 
@@ -155,6 +157,9 @@ Note any additional requirements for running the tests: `pip install -r tests/re
 `spark_submit.SparkJob.get_code()`: Gets the spark-submit return code
 
 `spark_submit.SparkJob.get_output()`: Gets the spark-submit stdout
+
+`spark_submit.SparkJob.get_id()`: Gets the spark-submit submission ID
+
 
 ### License
 
