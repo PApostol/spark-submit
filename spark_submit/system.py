@@ -5,25 +5,20 @@ import platform
 import re
 import subprocess
 import sys
-from typing import Dict, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple
 
 
-def _quote_spaces(val: str) -> str:
-    return f'"{val}"' if ' ' in val else val
+def _execute_cmd(cmd: str, timeout: Optional[int] = None, silent: bool = True, **kwargs: Any) -> Tuple[str, int]:
 
-
-def _get_env_vars() -> Dict[str, str]:
-    env_vars = {'JAVA_HOME': os.environ.get('JAVA_HOME', ''),
-                'PYSPARK_PYTHON': os.environ.get('PYSPARK_PYTHON', sys.executable),
-                'PYSPARK_DRIVER_PYTHON': os.environ.get('PYSPARK_DRIVER_PYTHON', sys.executable)
-                }
-    return {env_var: _quote_spaces(val).replace(os.path.sep, '/') for env_var, val in env_vars.items()}
-
-
-def _execute_cmd(cmd: str, silent: bool = True, timeout: Optional[int] = None) -> Tuple[str, int]:
-    with subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True) as process:
+    with subprocess.Popen(
+        cmd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        shell=True,
+        **kwargs,
+    ) as process:
         output, _ = process.communicate(timeout=timeout)
-        res = output.decode()
+        res = output.decode() if isinstance(output, bytes) else output
         code = process.returncode
 
     if code != 0 and not silent:
@@ -32,30 +27,37 @@ def _execute_cmd(cmd: str, silent: bool = True, timeout: Optional[int] = None) -
 
 
 def system_info() -> str:
-    """Collects Spark related system information, such as versions of spark-submit, Scala, Java, PySpark, Python and OS
+    """Collects Spark related system information, such as versions of
+       spark-submit, Scala, Java, PySpark, Python and OS
 
     Returns:
         str: system information
     """
+
+    def _quote_spaces(text: str) -> str:
+        return f'"{text}"' if ' ' in text else text
+
     spark_home = os.environ.get('SPARK_HOME', os.path.expanduser('~/spark_home')).replace(os.path.sep, '/')
-    spark_bin = spark_home + '/bin/spark-submit'
-    info_cmd = _quote_spaces(spark_bin) + ' --version'
+    info_cmd = f'{_quote_spaces(spark_home)}/bin/spark-submit --version'
 
     java_home = os.environ.get('JAVA_HOME', '').replace(os.path.sep, '/')
     if java_home:
-        java_bin = java_home + '/bin/java'
+        java_bin = f'{java_home}/bin/java'
         info_cmd += f' ; {_quote_spaces(java_bin)} -version'
+    else:
+        info_cmd += ' ; java -version'
 
     info_cmd += f' ; {_quote_spaces(sys.executable)} -m pip show pyspark'
     if platform.system() == 'Windows':
         info_cmd = info_cmd.replace(' ; ', ' & ')
 
     info_stdout, _ = _execute_cmd(info_cmd, silent=False)
-    info_re = {'Spark version': 'version (.+)',
-               'Scala version': 'scala version (.+?),',
-               'Java version': 'java version \"(.+)\"',
-               'PySpark version': 'Version: (.+)'
-              }
+    info_re = {
+        'Spark version': '  version (.+)',
+        'Scala version': 'scala version (.+?),',
+        'Java version': 'version "(.+)"',
+        'PySpark version': 'Version: (.+)',
+    }
 
     sys_info: Dict[str, str] = {}
     for key, val in info_re.items():
