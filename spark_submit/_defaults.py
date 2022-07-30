@@ -2,8 +2,7 @@
 import os
 from typing import Any, Dict, Set
 
-
-__defaults__: Dict[str, Any ] = {
+__defaults__: Dict[str, Any] = {
     'spark_home': os.environ.get('SPARK_HOME', os.path.expanduser('~/spark_home')),
     'master': 'local[*]',
     'name': 'spark-submit-task',
@@ -23,7 +22,7 @@ __defaults__: Dict[str, Any ] = {
     'supervise': False,
     'properties_file': None,
     'conf': [],
-    'main_file_args': ''
+    'main_file_args': '',
 }
 
 # Possible Spark driver states:
