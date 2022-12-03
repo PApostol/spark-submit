@@ -142,11 +142,14 @@ app = SparkJob(main_file, **spark_args)
 
 #### Testing
 
-You can do some simple testing with local mode Spark after cloning the repo:
-
-`python tests/run_test.py`
+You can do some simple testing with local mode Spark after cloning the repo.
 
 Note any additional requirements for running the tests: `pip install -r tests/requirements.txt`
+
+`pytest tests/`
+
+`python tests/run_integration_test.py`
+
 
 #### Additional methods
 
