@@ -37,4 +37,5 @@ Thumbs.db
 __pycache__/
 junk/
 dist/
+*.egg-info/
 .mypy_cache/
