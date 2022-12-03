@@ -4,10 +4,7 @@ from typing import Dict
 
 from setuptools import find_packages, setup
 
-info_location = os.path.join(os.path.abspath(os.path.dirname(__file__)),
-                             'spark_submit',
-                             '__info__.py'
-                             )
+info_location = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'spark_submit', '__info__.py')
 about: Dict[str, str] = {}
 
 with open(info_location, 'r', encoding='utf-8') as f:
@@ -40,6 +37,7 @@ setup(
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
         'Programming Language :: Python :: Implementation :: CPython',
         'Operating System :: OS Independent',
     ],

@@ -151,12 +151,14 @@ class SparkJob:
         resp = requests.get(kill_url)
         return resp.text, resp.status_code
 
-    def submit(self, *,
-               use_env_vars: bool = False,
-               extra_env_vars: Optional[Dict[str, str]] = None,
-               poll_time: int = 0,
-               timeout: Optional[int] = None
-               ) -> None:
+    def submit(
+        self,
+        *,
+        use_env_vars: bool = False,
+        extra_env_vars: Optional[Dict[str, str]] = None,
+        poll_time: int = 0,
+        timeout: Optional[int] = None,
+    ) -> None:
         """Submits the current Spark job to Spark master.
            If `use_env_vars=True`, the host environment variables in `os.environ` will be used
            with the spark-submit shell.
