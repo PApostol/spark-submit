@@ -61,9 +61,11 @@ def system_info() -> str:
 
     sys_info: Dict[str, str] = {}
     for key, val in info_re.items():
-        i = re.findall(val, info_stdout, re.IGNORECASE)
-        if i:
-            sys_info[key] = i[0].strip()
+        match = re.findall(val, info_stdout, re.IGNORECASE)
+        if match:
+            sys_info[key] = match[0].strip()
+        else:
+            sys_info[key] = key.split(' ')[0] + ' not detected!'
 
     sys_info['Python version'] = sys.version.split(' ', maxsplit=1)[0]
     sys_info['OS'] = platform.platform()
