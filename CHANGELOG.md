@@ -1,5 +1,9 @@
 ### Spark-submit
 
+#### 1.4.0 (TBD)
+Features:
+- Report if framework not detected by `spark_submit.system_info()`
+
 #### 1.3.0 (2022-07-30)
 Features:
 - Addition of `spark_submit.SparkJob.get_id()` method to obtain the Spark submission ID
