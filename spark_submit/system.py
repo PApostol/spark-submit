@@ -37,10 +37,10 @@ def system_info() -> str:
     def _quote_spaces(text: str) -> str:
         return f'"{text}"' if ' ' in text else text
 
-    spark_home = os.environ.get('SPARK_HOME', os.path.expanduser('~/spark_home')).replace(os.path.sep, '/')
+    spark_home = os.getenv('SPARK_HOME', os.path.expanduser('~/spark_home')).replace(os.path.sep, '/')
     info_cmd = f'{_quote_spaces(spark_home)}/bin/spark-submit --version'
 
-    java_home = os.environ.get('JAVA_HOME', '').replace(os.path.sep, '/')
+    java_home = os.getenv('JAVA_HOME', '').replace(os.path.sep, '/')
     if java_home:
         java_bin = f'{java_home}/bin/java'
         info_cmd += f' ; {_quote_spaces(java_bin)} -version'

@@ -3,7 +3,7 @@ import os
 from typing import Any, Dict, Set
 
 __defaults__: Dict[str, Any] = {
-    'spark_home': os.environ.get('SPARK_HOME', os.path.expanduser('~/spark_home')),
+    'spark_home': os.getenv('SPARK_HOME', os.path.expanduser('~/spark_home')),
     'master': 'local[*]',
     'name': 'spark-submit-task',
     'deploy_mode': 'client',

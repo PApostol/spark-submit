@@ -51,7 +51,7 @@ class SparkJob:
 
         self.env_vars = os.environ.copy()
         if 'JAVA_HOME' not in self.env_vars:
-            logging.warning('"JAVA_HOME" is not defined in environment variables.')
+            logging.warning('JAVA_HOME is not defined in environment variables.')
 
         self.is_yarn = 'yarn' in self.spark_args['master']
         self.is_k8s = 'k8s' in self.spark_args['master']
@@ -78,24 +78,14 @@ class SparkJob:
             if arg not in exclude and val is not None
         ]
         confs = [f'--conf {c}' for c in self.spark_args['conf']]
+        boolean_args = [f"--{arg.replace('_', '-')}" for arg in booleans if self.spark_args[arg]]
 
-        booleans_str = ''
-        for arg in booleans:
-            if self.spark_args[arg]:
-                booleans_str += '--' + arg.replace('_', '-')
+        args_str = ' '.join(args)
+        bool_str = ' '.join(boolean_args)
+        conf_str = ' '.join(confs)
 
-        cmd = (
-            self.spark_bin
-            + ' '.join(args)
-            + booleans_str
-            + ' '.join(confs)
-            + ' '
-            + self.spark_args['main_file']
-            + ' '
-            + str(self.spark_args['main_file_args'])
-        )
-
-        return cmd.replace('--', ' --').replace('  ', ' ').strip()
+        cmd = f"{self.spark_bin} {args_str} {bool_str} {conf_str} {self.spark_args['main_file']} {self.spark_args['main_file_args']}"
+        return cmd
 
     def _get_api_url(self, endpoint: str) -> str:
         return f"{self.spark_args['master'].replace('spark://', 'http://')}/v1/submissions/{endpoint}/{self.get_id()}"
