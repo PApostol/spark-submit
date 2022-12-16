@@ -1,8 +1,11 @@
 ### Spark-submit
 
-#### 1.4.0 (TBD)
+#### 1.4.0 (under development)
 Features:
 - Report if framework not detected by `spark_submit.system_info()`
+
+Misc/Internal
+- Better way to construct the spark-submit command
 
 #### 1.3.0 (2022-07-30)
 Features:
