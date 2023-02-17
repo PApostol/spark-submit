@@ -69,4 +69,4 @@ def system_info() -> str:
 
     sys_info['Python version'] = sys.version.split(' ', maxsplit=1)[0]
     sys_info['OS'] = platform.platform()
-    return '\n'.join([f'{key}: {val}' for key, val in sys_info.items()])
+    return '\n'.join(f'{key}: {val}' for key, val in sys_info.items())
