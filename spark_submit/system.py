@@ -38,7 +38,8 @@ def system_info() -> str:
         return f'"{text}"' if ' ' in text else text
 
     spark_home = os.getenv('SPARK_HOME', os.path.expanduser('~/spark_home')).replace(os.path.sep, '/')
-    info_cmd = f'{_quote_spaces(spark_home)}/bin/spark-submit --version'
+    spark_bin = _quote_spaces(f'{spark_home}/bin/spark-submit')
+    info_cmd = f'{spark_bin} --version'
 
     java_home = os.getenv('JAVA_HOME', '').replace(os.path.sep, '/')
     if java_home:
