@@ -1,6 +1,6 @@
 ### Spark-submit
 
-#### 1.4.0 (under development)
+#### 1.4.0 (2023-04-19)
 Features:
 - Report if framework not detected by `spark_submit.system_info`
 
